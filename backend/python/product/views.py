@@ -70,10 +70,15 @@ def product_list(request):
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         
 
+@csrf_exempt
 def product_detail(request, product_id):
-    product = [p for p in products if p["id"] == product_id]
+    product = next((p for p in products if p["id"] == product_id), None)
     if not product:
         return JsonResponse({"error": "Product not found"}, status=404)
+
+    #GET (fetch)
+    if request.method == "GET":
+        return JsonResponse(product)
     
     #DELETE (remove)
     if request.method == "DELETE":
@@ -82,11 +87,24 @@ def product_detail(request, product_id):
     
     #PUT (update)
     if request.method == "PUT":
-        data = json.loads(request.body)
-        product[0]["name"] = data["name"]
-        product[0]["description"] = data["description"]
-        product[0]["category"] = data["category"]
-        product[0]["price"] = data["price"]
-        product[0]["brand"] = data["brand"]
-        product[0]["warehouse_quantity"] = data["warehouse_quantity"]
-        return JsonResponse(product[0])
+        try:
+            data = json.loads(request.body)
+
+            if "price" in data and data["price"] < 0:
+                return JsonResponse({"error": "Price must be positive"}, status=400)
+
+            if "warehouse_quantity" in data and data["warehouse_quantity"] < 0:
+                return JsonResponse({"error": "Quantity cannot be negative"}, status=400)
+
+            product["name"] = data.get("name", product["name"])
+            product["description"] = data.get("description", product["description"])
+            product["category"] = data.get("category", product["category"])
+            product["price"] = data.get("price", product["price"])
+            product["brand"] = data.get("brand", product["brand"])
+            product["warehouse_quantity"] = data.get("warehouse_quantity", product["warehouse_quantity"])
+            return JsonResponse(product)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        
