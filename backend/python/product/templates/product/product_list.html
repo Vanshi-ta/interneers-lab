@@ -1,6 +1,6 @@
 <h1>Product List</h1>
 <ul>
-    {% for item in product %}
-        <li>{{ item.name }} - ${{ item.price }}</li>
+    {% for product in products %}
+        <li>{{ product.name }} - ${{ product.price }}</li>
     {% endfor %}
 </ul>
