@@ -134,7 +134,10 @@ These are the essential tools you need:
 
 5. **API & MongoDB Tools**
    - **[Postman](https://www.postman.com/downloads/)**, **[Insomnia](https://insomnia.rest/download)**, or **[Paw](https://paw.cloud/client) (only for mac)** for API testing
+   
+   ******************************************************************************************
    - **[MongoDB Compass](https://www.mongodb.com/try/download/compass)** or a **[VSCode MongoDB](https://code.visualstudio.com/docs/azure/mongodb)** extension
+
 
 ---
 
