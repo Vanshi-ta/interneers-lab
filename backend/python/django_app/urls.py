@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.urls import include
 from django.urls import path
 from django.http import HttpResponse
 
@@ -8,4 +9,5 @@ def hello_world(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('hello/', hello_world),
+    path('', include('product.urls')), 
 ]
