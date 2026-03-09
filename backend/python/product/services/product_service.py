@@ -1,11 +1,15 @@
 from product.repositories import product_repository
 
 def get_products():
-    return product_repository.get_all_products()
+    products = product_repository.get_all_products()
+    return [p.to_mongo().to_dict() for p in products]
 
 
 def get_product_by_id(product_id):
-    return product_repository.get_product_by_id(product_id)
+    product = product_repository.get_product_by_id(product_id)
+    if product:
+        return product.to_mongo().to_dict()
+    return None
 
 
 def create_product(data):
@@ -29,7 +33,7 @@ def create_product(data):
     if data["warehouse_quantity"] < 0:
         raise ValueError("quantity must be positive")
     
-    return product_repository.create_product(data)
+    return product_repository.create_product(data).to_mongo().to_dict()
 
 
 def update_product(product_id, data):
@@ -39,7 +43,10 @@ def update_product(product_id, data):
     if "warehouse_quantity" in data and data["warehouse_quantity"] < 0:
         raise ValueError("Warehouse quantity should be positive")
     
-    return product_repository.update_product(product_id,data)
+    product = product_repository.update_product(product_id, data)
+    if product:
+        return product.to_mongo().to_dict()
+    return None
 
 
 def delete_product(product_id):

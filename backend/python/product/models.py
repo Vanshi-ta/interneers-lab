@@ -1,13 +1,16 @@
-from django.db import models
+from mongoengine import Document, StringField, FloatField, IntField, DateTimeField
+from datetime import datetime
+
 
 # Create your models here.
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    category = models.CharField(max_length=10) 
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    brand = models.CharField(max_length=50) 
-    warehouse_quantity = models.IntegerField()
+class Product(Document):
+    name = StringField(required = True, max_length=100)
+    description = StringField()
+    category = StringField(max_length=10) 
+    price = FloatField(min_value=0, max_digits=10, decimal_places=2)
+    brand = StringField(max_length=50) 
+    warehouse_quantity = IntField(min_value = 0)
 
-    def __str__(self):
-        return self.name
+    meta = {
+        "collection": "products"
+    }

@@ -1,20 +1,15 @@
-products = []
-current_id = 1
+from product.models import Product
 
 
 def get_all_products():
-    return products
+    return Product.objects()
 
 
 def get_product_by_id(product_id):
-    for product in products:
-        if product["id"] == product_id:
-            return product
-    return None
+    return Product.objects(id=product_id)
 
 
 def create_product(product_data):
-    global current_id
 
     product = {
                 "id": current_id,
@@ -26,13 +21,12 @@ def create_product(product_data):
                 "warehouse_quantity": product_data["warehouse_quantity"],
             }
     
-    products.append(product)
-    current_id += 1
+    product.save()
     return product
 
 
 def update_product (product_id, data):
-    product = get_product_by_id(product_id)
+    product = Product.objects(id=product_id)
 
     if not product:
         return None
@@ -44,14 +38,15 @@ def update_product (product_id, data):
     product["brand"] = data.get("brand",product["brand"])
     product["warehouse_quantity"] = data.get("warehouse_quantity",product["warehouse_quantity"])
 
+    product.save()
     return product
 
 
 def delete_product(product_id):
-    product = get_product_by_id(product_id)
+    product = Product.objects(id=product_id)
 
-    if product:
-        products.remove(product)
-        return True
+    if not product:
+        return False
     
-    return False
+    product.delete()
+    return True
