@@ -15,12 +15,12 @@ from product.models import Product
 def create_product(product_data):
 
     product = Product(
-        name=product_data["name"],
-        description=product_data["description"],
-        category=product_data["category"],
-        price=product_data["price"],
-        brand=product_data["brand"],
-        warehouse_quantity=product_data["warehouse_quantity"]
+        name=product_data.get("name"),
+        description=product_data.get("description"),
+        category=product_data.get("category"),
+        price=product_data.get("price"),
+        brand=product_data.get("brand"),
+        warehouse_quantity=product_data.get("warehouse_quantity")
     )
 
     product.save()

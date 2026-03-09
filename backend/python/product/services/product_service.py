@@ -21,24 +21,17 @@ def get_product_by_id(product_id):
 
 
 def create_product(data):
-    required_fields = [
-        "name",
-        "description",
-        "category",
-        "price",
-        "brand",
-        "warehouse_quantity",
-    ]
+    required_fields = ["name","description","category","price","brand"]
 
     for field in required_fields:
         if field not in data:
             raise ValueError(f"{field} is required")
     
     #data validation
-    if data["price"] < 0:
+    if "price" in data and data["price"] < 0:
         raise ValueError("price must be positive")
     
-    if data["warehouse_quantity"] < 0:
+    if "warehouse_quantity" in data and data["warehouse_quantity"] < 0:
         raise ValueError("quantity must be positive")
     
     product = product_repository.create_product(data)
