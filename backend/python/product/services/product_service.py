@@ -1,14 +1,22 @@
 from product.repositories import product_repository
 
+
+def serialize_product(product):
+    data = product.to_mongo().to_dict()
+    data["id"] = str(data["_id"])
+    del data["_id"]
+    return data
+
+
 def get_products():
     products = product_repository.get_all_products()
-    return [p.to_mongo().to_dict() for p in products]
+    return [serialize_product(p) for p in products]
 
 
 def get_product_by_id(product_id):
     product = product_repository.get_product_by_id(product_id)
     if product:
-        return product.to_mongo().to_dict()
+        return serialize_product(product)
     return None
 
 
@@ -24,7 +32,7 @@ def create_product(data):
 
     for field in required_fields:
         if field not in data:
-            raise ValueError(f"{field} is requires")
+            raise ValueError(f"{field} is required")
     
     #data validation
     if data["price"] < 0:
@@ -33,8 +41,8 @@ def create_product(data):
     if data["warehouse_quantity"] < 0:
         raise ValueError("quantity must be positive")
     
-    return product_repository.create_product(data).to_mongo().to_dict()
-
+    product = product_repository.create_product(data)
+    return serialize_product(product)
 
 def update_product(product_id, data):
     if "price" in data and data["price"] < 0:
@@ -45,7 +53,7 @@ def update_product(product_id, data):
     
     product = product_repository.update_product(product_id, data)
     if product:
-        return product.to_mongo().to_dict()
+        return serialize_product(product)
     return None
 
 
