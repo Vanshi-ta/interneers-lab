@@ -2,10 +2,13 @@ from product.repositories import product_repository
 
 
 def serialize_product(product):
-    data = product.to_mongo().to_dict()
-    data["id"] = str(data["_id"])
-    del data["_id"]
-    return data
+    return {
+        "id": str(product.id),
+        "name": product.name,
+        "price": product.price,
+        "created_at": product.created_at.isoformat(),
+        "updated_at": product.updated_at.isoformat()
+    }
 
 
 def get_products():
@@ -37,6 +40,7 @@ def create_product(data):
     product = product_repository.create_product(data)
     return serialize_product(product)
 
+
 def update_product(product_id, data):
     if "price" in data and data["price"] < 0:
         raise ValueError("Price should be positive")
@@ -52,4 +56,3 @@ def update_product(product_id, data):
 
 def delete_product(product_id):
     return product_repository.delete_product(product_id)
-

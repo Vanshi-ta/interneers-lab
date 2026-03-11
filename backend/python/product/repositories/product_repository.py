@@ -1,5 +1,5 @@
 from product.models import Product
-
+from datetime import datetime
 
 def get_all_products():
     return Product.objects()
@@ -7,9 +7,6 @@ def get_all_products():
 
 def get_product_by_id(product_id):
     return Product.objects(id=product_id).first()
-
-
-from product.models import Product
 
 
 def create_product(product_data):
@@ -39,6 +36,7 @@ def update_product (product_id, data):
     product.price = data.get("price",product.price)
     product.brand = data.get("brand",product.brand)
     product.warehouse_quantity = data.get("warehouse_quantity",product.warehouse_quantity)
+    product.updated_at = datetime.utcnow()
 
     product.save()
     return product
