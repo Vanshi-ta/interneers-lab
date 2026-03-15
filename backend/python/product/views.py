@@ -12,7 +12,26 @@ def product_list(request):
         page = int(request.GET.get("page", 1))
         limit = int(request.GET.get("limit", 10))
         sort = request.GET.get("sort")
-        products = product_service.get_products(page, limit, sort)
+        filters = {
+            "name": request.GET.get("name"),
+            "description": request.GET.get("description"),
+            "category": request.GET.get("category"),
+            "brand": request.GET.get("brand"),
+
+            "price_gt": request.GET.get("price_gt"),
+            "price_lt": request.GET.get("price_lt"),
+
+            "warehouse_quantity_gt": request.GET.get("warehouse_quantity_gt"),
+            "warehouse_quantity_lt": request.GET.get("warehouse_quantity_lt"),
+
+            "created_after": request.GET.get("created_after"),
+            "created_before": request.GET.get("created_before"),
+
+            "updated_after": request.GET.get("updated_after"),
+            "updated_before": request.GET.get("updated_before"),
+        }
+
+        products = product_service.get_products(filters, page, limit, sort)
         return JsonResponse(products, safe=False)
     
     #POST (create)

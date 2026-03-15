@@ -13,8 +13,8 @@ def serialize_product(product):
     }
 
 
-def get_products(page = 1, limit = 10, sort=None):
-    products = product_repository.get_all_products(page, limit, sort)
+def get_products(filters = None, page = 1, limit = 10, sort=None):
+    products = product_repository.get_all_products(filters, page, limit, sort)
     return {
         "page": page,
         "limit": limit,

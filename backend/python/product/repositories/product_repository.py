@@ -1,6 +1,44 @@
 from product.models import Product
 from datetime import datetime
 
+def apply_filters(query, filters):
+    if not filters:
+        return query
+
+    if filters.get("name"):
+        query = query.filter(name=filters["name"])
+
+    if filters.get("description"):
+        query = query.filter(description=filters["description"])
+
+    if filters.get("category"):
+        query = query.filter(category=filters["category"])
+
+    if filters.get("brand"):
+        query = query.filter(brand=filters["brand"])
+
+    if filters.get("price_gt"):
+        query = query.filter(price__gte=float(filters["price_gt"]))
+    if filters.get("price_lt"):
+        query = query.filter(price__lte=float(filters["price_lt"]))
+
+    if filters.get("warehouse_quantity_gt"):
+        query = query.filter(warehouse_quantity__gte=int(filters["warehouse_quantity_gt"]))
+    if filters.get("warehouse_quantity_lt"):
+        query = query.filter(warehouse_quantity__lte=int(filters["warehouse_quantity_lt"]))
+
+    if filters.get("created_after"):
+        query = query.filter(created_at__gte=filters["created_after"])
+    if filters.get("created_before"):
+        query = query.filter(created_at__lte=filters["created_before"])
+
+    if filters.get("updated_after"):
+        query = query.filter(updated_at__gte=filters["updated_after"])
+    if filters.get("updated_before"):
+        query = query.filter(updated_at__lte=filters["updated_before"])
+    
+    return query
+
 
 def apply_pagination(query, page, limit):
     skip = (page - 1) * limit
@@ -13,8 +51,9 @@ def apply_sorting(query, sort):
     return query
 
 
-def get_all_products(page = 1, limit = 10, sort=None):
+def get_all_products(filters = None, page = 1, limit = 10, sort=None):
     query = Product.objects()
+    query = apply_filters(query, filters)
     query = apply_sorting(query, sort)
     query = apply_pagination(query, page, limit)
     return query    
