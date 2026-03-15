@@ -6,14 +6,20 @@ def serialize_product(product):
         "id": str(product.id),
         "name": product.name,
         "price": product.price,
+        "brand": product.brand,
+        "category": product.category,
         "created_at": product.created_at.isoformat(),
         "updated_at": product.updated_at.isoformat()
     }
 
 
-def get_products():
-    products = product_repository.get_all_products()
-    return [serialize_product(p) for p in products]
+def get_products(page = 1, limit = 10, sort=None):
+    products = product_repository.get_all_products(page, limit, sort)
+    return {
+        "page": page,
+        "limit": limit,
+        "data": [serialize_product(p) for p in products]
+    }
 
 
 def get_product_by_id(product_id):

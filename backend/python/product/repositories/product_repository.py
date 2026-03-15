@@ -1,8 +1,23 @@
 from product.models import Product
 from datetime import datetime
 
-def get_all_products():
-    return Product.objects()
+
+def apply_pagination(query, page, limit):
+    skip = (page - 1) * limit
+    return query.skip(skip).limit(limit)
+
+
+def apply_sorting(query, sort):
+    if sort:
+        query = query.order_by(sort)
+    return query
+
+
+def get_all_products(page = 1, limit = 10, sort=None):
+    query = Product.objects()
+    query = apply_sorting(query, sort)
+    query = apply_pagination(query, page, limit)
+    return query    
 
 
 def get_product_by_id(product_id):

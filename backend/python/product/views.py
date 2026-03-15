@@ -1,22 +1,18 @@
-# from django.shortcuts import render
-# from .models import Product
-# Create your views here.
-# def product_list(request):
-#     product = Product.objects.all()
-#     return render(request, 'product/product_list.html', {'products': product})
-
 from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-
 from product.services import product_service
+
 
 @csrf_exempt
 def product_list(request):
     
     #GET (fetch)
-    if request.method == "GET":
-        products = product_service.get_products()
+    if request.method == "GET":  
+        page = int(request.GET.get("page", 1))
+        limit = int(request.GET.get("limit", 10))
+        sort = request.GET.get("sort")
+        products = product_service.get_products(page, limit, sort)
         return JsonResponse(products, safe=False)
     
     #POST (create)
@@ -71,5 +67,3 @@ def product_detail(request, product_id):
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-        
