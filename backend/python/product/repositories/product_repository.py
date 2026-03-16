@@ -54,9 +54,10 @@ def apply_sorting(query, sort):
 def get_all_products(filters = None, page = 1, limit = 10, sort=None):
     query = Product.objects()
     query = apply_filters(query, filters)
+    total = query.count()
     query = apply_sorting(query, sort)
     query = apply_pagination(query, page, limit)
-    return query    
+    return query, total   
 
 
 def get_product_by_id(product_id):

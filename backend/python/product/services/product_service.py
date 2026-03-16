@@ -1,4 +1,6 @@
 from product.repositories import product_repository
+from product.repositories import product_category_repository
+from product.models import Product, ProductCategory
 
 
 def serialize_product(product):
@@ -7,17 +9,21 @@ def serialize_product(product):
         "name": product.name,
         "price": product.price,
         "brand": product.brand,
-        "category": product.category,
+        "category": {
+            "id": str(product.category.id),
+            "title": product.category.title
+        } if product.category else None,
         "created_at": product.created_at.isoformat(),
         "updated_at": product.updated_at.isoformat()
     }
 
 
 def get_products(filters = None, page = 1, limit = 10, sort=None):
-    products = product_repository.get_all_products(filters, page, limit, sort)
+    products, total = product_repository.get_all_products(filters, page, limit, sort)
     return {
         "page": page,
         "limit": limit,
+        "total": total,
         "data": [serialize_product(p) for p in products]
     }
 
@@ -43,7 +49,18 @@ def create_product(data):
     if "warehouse_quantity" in data and data["warehouse_quantity"] < 0:
         raise ValueError("quantity must be positive")
     
-    product = product_repository.create_product(data)
+    category = None
+    if "category" in data:
+        category = ProductCategory.objects(id=data["category"]).first()
+
+        if not category:
+            raise ValueError("Invalid category")
+
+    product = product_repository.create_product({
+        **data,
+        "category": category
+    })
+
     return serialize_product(product)
 
 

@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-from product.services import product_service
+from product.services import product_service, product_category_service
 
 
 @csrf_exempt
@@ -86,3 +86,56 @@ def product_detail(request, product_id):
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
+        
+
+@csrf_exempt
+def category_list(request):
+    if request.method == "GET":
+        categories = product_category_service.get_categories()
+        return JsonResponse(categories, safe=False)
+    
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            category = product_category_service.create_category(data)
+            return JsonResponse(category, status=201)
+
+        except ValueError as e:
+            return JsonResponse({"error":str(e)}, status = 400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        
+
+@csrf_exempt
+def category_detail(request, category_id):
+    if request.method == "GET":
+        category = product_category_service.get_category_by_id(category_id)
+        if not category:
+            return JsonResponse({"error":"Category not found"}, status = 404)
+        
+        return JsonResponse(category)
+    
+    if request.method == "DELETE":
+        result = product_category_service.delete_category(category_id)
+        if not result:
+            return JsonResponse({"error":"Category not found"}, status = 404)
+        return JsonResponse({"message": "Category deleted successfully"})
+    
+    if request.method == "PUT":
+        try:
+            data = json.loads(request.body)
+            category = product_category_service.update_category(category_id,data)
+
+            if not category:
+                return JsonResponse({"error":"Category not found"}, status = 404)
+            
+            return JsonResponse(category)
+
+        except ValueError as e:
+            return JsonResponse({"error":str(e)}, status = 400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        
+
