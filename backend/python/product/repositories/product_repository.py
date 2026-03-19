@@ -1,4 +1,4 @@
-from product.models import Product
+from product.models import Product, ProductCategory
 from datetime import datetime
 
 def apply_filters(query, filters):
@@ -104,4 +104,47 @@ def delete_product(product_id):
         return False
     
     product.delete()
+    return True
+
+
+def get_products_by_category(category, page=1, limit=10, sort=None):
+    query = Product.objects(category=category)
+
+    total = query.count()
+
+    if sort:
+        query = query.order_by(sort)
+
+    skip = (page - 1) * limit
+    query = query.skip(skip).limit(limit)
+
+    return query, total
+
+
+def add_product_to_category(product_id, category_id):
+    product = Product.objects(id=product_id).first()
+    category = ProductCategory.objects(id=category_id).first()
+
+    if not product or not category:
+        return None
+
+    product.category = category
+    product.save()
+
+    return product
+
+
+def remove_product_from_category(product_id, category_id):
+    product = Product.objects(id=product_id).first()
+
+    if not product:
+        return None
+
+    # optional safety check
+    if not product.category or str(product.category.id) != category_id:
+        return None
+
+    product.category = None
+    product.save()
+
     return True

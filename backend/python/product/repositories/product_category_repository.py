@@ -1,5 +1,6 @@
-from product.models import ProductCategory
+from product.models import ProductCategory, Product
 from datetime import datetime
+
 
 def get_all_categories():
     categories = ProductCategory.objects()
@@ -38,6 +39,6 @@ def delete_category(category_id):
     category = ProductCategory.objects(id=category_id).first()
     if not category:
         return False
-
+    
     category.delete()
     return True

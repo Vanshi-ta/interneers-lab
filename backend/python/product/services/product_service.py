@@ -79,3 +79,35 @@ def update_product(product_id, data):
 
 def delete_product(product_id):
     return product_repository.delete_product(product_id)
+
+
+def get_products_by_category(category_id, page=1, limit=10, sort=None):
+    category = ProductCategory.objects(id=category_id).first()
+
+    if not category:
+        return None
+
+    products, total = product_repository.get_products_by_category(
+        category, page, limit, sort
+    )
+
+    return {
+        "category": {
+            "id": str(category.id),
+            "title": category.title
+        },
+        "page": page,
+        "limit": limit,
+        "total": total,
+        "data": [serialize_product(p) for p in products]
+    }
+
+
+def add_product_to_category(product_id, category_id):
+    product = product_repository.add_product_to_category(product_id, category_id)
+    
+    return serialize_product(product)
+
+
+def remove_product_from_category(product_id, category_id):
+    return product_repository.remove_product_from_category(product_id, category_id)

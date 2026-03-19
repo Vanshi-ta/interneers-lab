@@ -1,4 +1,7 @@
 from product.repositories import product_category_repository
+from product.repositories import product_repository
+from product.models import Product, ProductCategory
+
 
 def serialize_category(category):
     return {
@@ -38,5 +41,10 @@ def update_category(category_id, data):
 
 
 def delete_category(category_id):
+    category = ProductCategory.objects(id=category_id).first()
+    if not category:
+        return False
+    if Product.objects(category=category).count() > 0:
+        raise ValueError("Cannot delete category with existing products")
     return product_category_repository.delete_category(category_id)
     

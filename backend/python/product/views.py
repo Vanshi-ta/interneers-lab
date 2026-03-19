@@ -139,3 +139,40 @@ def category_detail(request, category_id):
             return JsonResponse({"error": "Invalid JSON"}, status=400)
         
 
+@csrf_exempt
+def category_products(request, category_id):
+    if request.method == "GET":
+        page = int(request.GET.get("page", 1))
+        limit = int(request.GET.get("limit", 10))
+        sort = request.GET.get("sort")
+
+        products = product_service.get_products_by_category(
+            category_id, page, limit, sort
+        )
+
+        if not products:
+            return JsonResponse({"error": "Category not found"}, status=404)
+
+        return JsonResponse(products, safe=False)
+    
+
+@csrf_exempt
+def manage_product_category(request, category_id, product_id):
+
+    # ADD product to category
+    if request.method == "PUT":
+        result = product_service.add_product_to_category(product_id, category_id)
+
+        if not result:
+            return JsonResponse({"error": "Product or Category not found"}, status=404)
+
+        return JsonResponse(result)
+
+    # REMOVE product from category
+    if request.method == "DELETE":
+        result = product_service.remove_product_from_category(product_id, category_id)
+
+        if not result:
+            return JsonResponse({"error": "Product or Category not found"}, status=404)
+
+        return JsonResponse({"message": "Product removed from category"})
