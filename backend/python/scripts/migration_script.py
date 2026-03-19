@@ -3,10 +3,17 @@ from datetime import datetime
 from bson import ObjectId
 from bson.dbref import DBRef
 
+def migrate_brand():
+    for product in Product.objects():
+        if not product.brand:
+            product.brand = "Unknown"
+            product.save()
+            print(f"Updated brand for: {product.name}")
 
-def run_migration():
-    print("Starting migration...")
+    print("Brand migration completed!")
 
+
+def migrate_categories():
     uncategorised = ProductCategory.objects(title="Uncategorised").first()
 
     if not uncategorised:
@@ -30,13 +37,11 @@ def run_migration():
     for product in products:
         raw_category = product._data.get("category")
 
-        print(product.name, type(raw_category), raw_category)
-
-        # Case 1: Already correct (ObjectId inside DBRef)
+        # Skip if already a valid DBRef
         if isinstance(raw_category, DBRef) and isinstance(raw_category.id, ObjectId):
             continue
 
-        # Case 2: Invalid DBRef with string ID → migrate
+        # Invalid DBRef with string ID 
         if isinstance(raw_category, DBRef) and isinstance(raw_category.id, str):
 
             old_name = raw_category.id
@@ -58,13 +63,18 @@ def run_migration():
             product.save()
             print(f"Updated product: {product.name}")
 
-        # Case 3: No category
+        # No category
         elif raw_category is None:
             product.category = uncategorised
             product.save()
             print(f"Assigned Uncategorised: {product.name}")
+    print("Categoories migration completed")
 
-    
+
+def run_migration():
+    print("Starting migration...")
+    migrate_categories()
+    migrate_brand()
     print("Migration completed successfully!")
 
 

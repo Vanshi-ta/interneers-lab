@@ -36,7 +36,7 @@ def get_product_by_id(product_id):
 
 
 def create_product(data):
-    required_fields = ["name","description","category","price","brand"]
+    required_fields = ["name","category","brand"]
 
     for field in required_fields:
         if field not in data:
