@@ -12,7 +12,9 @@ def apply_filters(query, filters):
         query = query.filter(description=filters["description"])
 
     if filters.get("category"):
-        query = query.filter(category=filters["category"])
+        category = ProductCategory.objects(id=filters["category"]).first()
+        if category:
+            query = query.filter(category=category)
 
     if filters.get("brand"):
         query = query.filter(brand=filters["brand"])
@@ -84,6 +86,12 @@ def update_product (product_id, data):
 
     if not product:
         return None
+    
+    if "category" in data:
+        category = ProductCategory.objects(id=data["category"]).first()
+        if not category:
+            raise ValueError("Invalid category")
+        data["category"] = category
 
     product.name = data.get("name",product.name)
     product.description = data.get("description",product.description)

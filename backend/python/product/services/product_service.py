@@ -105,7 +105,8 @@ def get_products_by_category(category_id, page=1, limit=10, sort=None):
 
 def add_product_to_category(product_id, category_id):
     product = product_repository.add_product_to_category(product_id, category_id)
-    
+    if not product:
+        return None
     return serialize_product(product)
 
 
