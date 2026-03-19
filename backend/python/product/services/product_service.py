@@ -1,6 +1,8 @@
 from product.repositories import product_repository
 from product.repositories import product_category_repository
 from product.models import Product, ProductCategory
+import csv
+from io import TextIOWrapper
 
 
 def serialize_product(product):
@@ -71,6 +73,15 @@ def update_product(product_id, data):
     if "warehouse_quantity" in data and data["warehouse_quantity"] < 0:
         raise ValueError("Warehouse quantity should be positive")
     
+    if "category" in data:
+        category = ProductCategory.objects(id=data["category"]).first()
+        if not category:
+            raise ValueError("Invalid category")
+        data["category"] = category
+
+    if"brand" in data and not data["brand"]:
+        raise ValueError("Brand cannot be empty")
+    
     product = product_repository.update_product(product_id, data)
     if product:
         return serialize_product(product)
@@ -112,3 +123,58 @@ def add_product_to_category(product_id, category_id):
 
 def remove_product_from_category(product_id, category_id):
     return product_repository.remove_product_from_category(product_id, category_id)
+
+
+def bulk_create_products(file):
+    reader = csv.DictReader(TextIOWrapper(file, encoding='utf-8'))
+    created_products = []
+    errors = []
+
+    for idx, row in enumerate(reader, start=1):
+        try:
+            name = row.get("name")
+            brand = row.get("brand")
+            category = row.get("category")
+            if not name or not brand or not category:
+                raise ValueError("Name, Brand, and Category are required")
+           
+            if category:
+                category = ProductCategory.objects(title__iexact=category).first()
+
+                if not category:
+                    raise ValueError(
+                        f"Category '{category}' does not exist. Please create it first."
+                    )
+
+            price = row.get("price")
+            if price and float(price) < 0:
+                raise ValueError("Price must be positive")
+            
+            warehouse_quantity = row.get("warehouse_quantity")
+            if warehouse_quantity and int(warehouse_quantity) < 0:
+                raise ValueError("Warehouse quantity must be positive")
+            
+            product_data = {
+                "name": name,
+                "description": row.get("description"),
+                "category": category,
+                "price": price,
+                "brand": brand,
+                "warehouse_quantity": warehouse_quantity
+            }
+
+            product = product_repository.create_product(product_data)
+            created_products.append(serialize_product(product))
+
+        except Exception as e:
+            errors.append({
+                "row": idx,
+                "error": str(e)
+            })
+
+    return {
+        "created_count": len(created_products),
+        "error_count": len(errors),
+        "errors": errors,
+        "data": created_products
+    }

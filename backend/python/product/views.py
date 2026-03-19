@@ -176,3 +176,20 @@ def manage_product_category(request, category_id, product_id):
             return JsonResponse({"error": "Product or Category not found"}, status=404)
 
         return JsonResponse({"message": "Product removed from category"})
+    
+
+@csrf_exempt
+def bulk_upload_products(request):
+    if request.method == "POST":
+        try:
+            file = request.FILES.get("file")
+            if not file:
+                return JsonResponse({"error": "CSV file is required"}, status=400)
+
+            result = product_service.bulk_create_products(file)
+            return JsonResponse(result, status=201)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        
+    return JsonResponse({"error": "Invalid method"}, status=405)
