@@ -16,9 +16,18 @@ def apply_filters(query, filters):
         if category:
             query = query.filter(category=category)
 
+    if filters.get("categories"):
+        category_ids = filters["categories"].split(",")
+        categories = ProductCategory.objects(id__in=category_ids)
+        query = query.filter(category__in=categories)
+
     if filters.get("brand"):
         query = query.filter(brand=filters["brand"])
 
+    if filters.get("brands"):
+        brands = filters["brands"].split(",")
+        query = query.filter(brand__in=brands)
+            
     if filters.get("price_gt"):
         query = query.filter(price__gte=float(filters["price_gt"]))
     if filters.get("price_lt"):

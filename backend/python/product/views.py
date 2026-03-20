@@ -16,7 +16,9 @@ def product_list(request):
             "name": request.GET.get("name"),
             "description": request.GET.get("description"),
             "category": request.GET.get("category"),
+            "categories": request.GET.get("categories"),
             "brand": request.GET.get("brand"),
+            "brands": request.GET.get("brands"),
 
             "price_gt": request.GET.get("price_gt"),
             "price_lt": request.GET.get("price_lt"),

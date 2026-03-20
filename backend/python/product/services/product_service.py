@@ -20,6 +20,7 @@ def serialize_product(product):
     }
 
 
+# url: /products/ (GET)
 def get_products(filters = None, page = 1, limit = 10, sort=None):
     products, total = product_repository.get_all_products(filters, page, limit, sort)
     return {
@@ -30,6 +31,7 @@ def get_products(filters = None, page = 1, limit = 10, sort=None):
     }
 
 
+# url: /products/<product_id>/ (GET)
 def get_product_by_id(product_id):
     product = product_repository.get_product_by_id(product_id)
     if product:
@@ -37,6 +39,7 @@ def get_product_by_id(product_id):
     return None
 
 
+# url: /products/ (POST)
 def create_product(data):
     required_fields = ["name","category","brand"]
 
@@ -66,6 +69,7 @@ def create_product(data):
     return serialize_product(product)
 
 
+# url: /products/<product_id>/ (PUT)
 def update_product(product_id, data):
     if "price" in data and data["price"] < 0:
         raise ValueError("Price should be positive")
@@ -88,10 +92,12 @@ def update_product(product_id, data):
     return None
 
 
+# url: /products/<product_id>/ (DELETE)
 def delete_product(product_id):
     return product_repository.delete_product(product_id)
 
 
+# url: /categories/<category_id>/products/ (GET)
 def get_products_by_category(category_id, page=1, limit=10, sort=None):
     category = ProductCategory.objects(id=category_id).first()
 
