@@ -12,11 +12,22 @@ def apply_filters(query, filters):
         query = query.filter(description=filters["description"])
 
     if filters.get("category"):
-        query = query.filter(category=filters["category"])
+        category = ProductCategory.objects(id=filters["category"]).first()
+        if category:
+            query = query.filter(category=category)
+
+    if filters.get("categories"):
+        category_ids = filters["categories"].split(",")
+        categories = ProductCategory.objects(id__in=category_ids)
+        query = query.filter(category__in=categories)
 
     if filters.get("brand"):
         query = query.filter(brand=filters["brand"])
 
+    if filters.get("brands"):
+        brands = filters["brands"].split(",")
+        query = query.filter(brand__in=brands)
+            
     if filters.get("price_gt"):
         query = query.filter(price__gte=float(filters["price_gt"]))
     if filters.get("price_lt"):
@@ -84,6 +95,12 @@ def update_product (product_id, data):
 
     if not product:
         return None
+    
+    if "category" in data:
+        category = ProductCategory.objects(id=data["category"]).first()
+        if not category:
+            raise ValueError("Invalid category")
+        data["category"] = category
 
     product.name = data.get("name",product.name)
     product.description = data.get("description",product.description)
