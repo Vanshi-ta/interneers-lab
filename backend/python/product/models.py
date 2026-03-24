@@ -7,7 +7,7 @@ class Product(Document):
     description = StringField()
     category = ReferenceField("ProductCategory") 
     price = FloatField(min_value=0)
-    brand = StringField(max_length=50) 
+    brand = StringField(required=True, max_length=50)
     warehouse_quantity = IntField(min_value = 0)
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)

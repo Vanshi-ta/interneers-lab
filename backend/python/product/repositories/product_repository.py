@@ -1,5 +1,6 @@
 from product.models import Product, ProductCategory
 from datetime import datetime
+from bson import ObjectId
 
 def apply_filters(query, filters):
     if not filters:
@@ -11,23 +12,35 @@ def apply_filters(query, filters):
     if filters.get("description"):
         query = query.filter(description=filters["description"])
 
+    # Single category filter
     if filters.get("category"):
         category = ProductCategory.objects(id=filters["category"]).first()
         if category:
             query = query.filter(category=category)
 
+    # Multiple categories filter (FIXED + VALIDATION)
     if filters.get("categories"):
-        category_ids = filters["categories"].split(",")
-        categories = ProductCategory.objects(id__in=category_ids)
-        query = query.filter(category__in=categories)
+        raw_ids = filters["categories"].split(",")
 
+        valid_ids = []
+        for cid in raw_ids:
+            cid = cid.strip().rstrip("/")  # fixes your error
+            if ObjectId.is_valid(cid):
+                valid_ids.append(cid)
+
+        if valid_ids:
+            categories = ProductCategory.objects(id__in=valid_ids)
+            query = query.filter(category__in=categories)
+
+    # Single brand
     if filters.get("brand"):
         query = query.filter(brand=filters["brand"])
 
+    # Multiple brands
     if filters.get("brands"):
         brands = filters["brands"].split(",")
         query = query.filter(brand__in=brands)
-            
+
     if filters.get("price_gt"):
         query = query.filter(price__gte=float(filters["price_gt"]))
     if filters.get("price_lt"):
@@ -47,9 +60,8 @@ def apply_filters(query, filters):
         query = query.filter(updated_at__gte=filters["updated_after"])
     if filters.get("updated_before"):
         query = query.filter(updated_at__lte=filters["updated_before"])
-    
-    return query
 
+    return query
 
 def apply_pagination(query, page, limit):
     skip = (page - 1) * limit
@@ -76,7 +88,6 @@ def get_product_by_id(product_id):
 
 
 def create_product(product_data):
-
     product = Product(
         name=product_data.get("name"),
         description=product_data.get("description"),
