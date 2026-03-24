@@ -12,7 +12,8 @@ class Product(Document):
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
     meta = {
-        "collection": "products"
+        "collection": "products",
+        "indexes": ["category", "brand", "price"]
     }
 
 

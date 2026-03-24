@@ -88,7 +88,8 @@ def product_detail(request, product_id):
         
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-        
+    
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 @csrf_exempt
 def category_list(request):

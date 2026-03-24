@@ -38,7 +38,7 @@ def apply_filters(query, filters):
 
     # Multiple brands
     if filters.get("brands"):
-        brands = filters["brands"].split(",")
+        brands = [b.strip() for b in filters["brands"].split(",")]
         query = query.filter(brand__in=brands)
 
     if filters.get("price_gt"):

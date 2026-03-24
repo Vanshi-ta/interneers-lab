@@ -140,17 +140,16 @@ def bulk_create_products(file):
         try:
             name = row.get("name")
             brand = row.get("brand")
-            category = row.get("category")
-            if not name or not brand or not category:
+            category_name = row.get("category")
+            if not name or not brand or not category_name:
                 raise ValueError("Name, Brand, and Category are required")
            
-            if category:
-                category = ProductCategory.objects(title__iexact=category).first()
+            category = ProductCategory.objects(title__iexact=category_name).first()
 
-                if not category:
-                    raise ValueError(
-                        f"Category '{category}' does not exist. Please create it first."
-                    )
+            if not category:
+                raise ValueError(
+                    f"Category '{category_name}' does not exist. Please create it first."
+                )
 
             price = row.get("price")
             if price and float(price) < 0:
@@ -164,9 +163,9 @@ def bulk_create_products(file):
                 "name": name,
                 "description": row.get("description"),
                 "category": category,
-                "price": price,
+                "price": float(price) if price else 0,
                 "brand": brand,
-                "warehouse_quantity": warehouse_quantity
+                "warehouse_quantity": int(warehouse_quantity) if warehouse_quantity else 0
             }
 
             product = product_repository.create_product(product_data)
