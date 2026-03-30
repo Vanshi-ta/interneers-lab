@@ -1,5 +1,4 @@
-from product.repositories import product_repository
-from product.repositories import product_category_repository
+from product.repositories import product_repository, product_category_repository
 from product.models import Product, ProductCategory
 import csv
 from io import TextIOWrapper
