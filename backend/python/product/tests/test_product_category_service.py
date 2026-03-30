@@ -7,7 +7,7 @@ class TestProductCategoryService(unittest.TestCase):
 
     @patch("product.services.product_category_service.product_category_repository.create_category")
     def test_create_category_success(self, mock_create_category):
-
+        
         mock_category = MagicMock()
         mock_category.id = "cat123"
         mock_category.title = "Electronics"
@@ -26,7 +26,7 @@ class TestProductCategoryService(unittest.TestCase):
 
 
     def test_create_category_missing_title(self):
-
+        
         with self.assertRaises(ValueError):
             product_category_service.create_category({
                 "description": "Devices"
@@ -36,7 +36,7 @@ class TestProductCategoryService(unittest.TestCase):
     @patch("product.services.product_category_service.Product.objects")
     @patch("product.services.product_category_service.ProductCategory.objects")
     def test_delete_category_with_products(self, mock_category_objects, mock_product_objects):
-
+        
         mock_category = MagicMock()
 
         mock_category_objects.return_value.first.return_value = mock_category
@@ -50,7 +50,7 @@ class TestProductCategoryService(unittest.TestCase):
     @patch("product.services.product_category_service.Product.objects")
     @patch("product.services.product_category_service.ProductCategory.objects")
     def test_delete_category_success(self, mock_category_objects, mock_product_objects, mock_delete):
-
+        
         mock_category = MagicMock()
 
         mock_category_objects.return_value.first.return_value = mock_category
