@@ -62,6 +62,27 @@ class TestProductService(unittest.TestCase):
             })
 
 
+    @patch("product.services.product_service.ProductCategory.objects")
+    def test_create_product_invalid_category(self, mock_category):
+
+        mock_category.return_value.first.return_value = None
+
+        with self.assertRaises(ValueError):
+            product_service.create_product({
+                "name": "Phone",
+                "category": "invalid",
+                "brand": "Apple"
+            })
+
+
+    def test_create_product_missing_name(self):
+        with self.assertRaises(ValueError):
+            product_service.create_product({
+                "category": "123",
+                "brand": "Apple"
+            })
+
+
     @patch("product.services.product_service.product_repository.update_product")
     def test_update_product_not_found(self, mock_update_product):
         """
@@ -73,6 +94,16 @@ class TestProductService(unittest.TestCase):
         result = product_service.update_product("invalid_id", {})
 
         self.assertIsNone(result)
+
+
+    def test_update_product_invalid_price(self):
+        with self.assertRaises(ValueError):
+            product_service.update_product("id", {"price": -1})
+
+
+    def test_update_product_empty_brand(self):
+        with self.assertRaises(ValueError):
+            product_service.update_product("id", {"brand": ""})        
 
 
     @patch("product.services.product_service.product_repository.delete_product")
@@ -123,11 +154,6 @@ class TestProductService(unittest.TestCase):
         result = product_service.get_products()
 
         self.assertEqual(result["total"], 1)
-
-    
-    def test_update_invalid_brand(self):
-        with self.assertRaises(ValueError):
-            product_service.update_product("id", {"brand": ""})
 
 
     @patch("product.services.product_service.product_repository.get_products_by_category")

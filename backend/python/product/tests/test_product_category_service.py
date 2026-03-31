@@ -33,6 +33,16 @@ class TestProductCategoryService(unittest.TestCase):
             })
 
 
+    @patch("product.services.product_category_service.ProductCategory.objects")
+    def test_delete_category_not_found(self, mock_category):
+
+        mock_category.return_value.first.return_value = None
+
+        result = product_category_service.delete_category("id")
+
+        self.assertFalse(result)
+
+
     @patch("product.services.product_category_service.Product.objects")
     @patch("product.services.product_category_service.ProductCategory.objects")
     def test_delete_category_with_products(self, mock_category_objects, mock_product_objects):
