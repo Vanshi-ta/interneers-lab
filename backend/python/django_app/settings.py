@@ -12,11 +12,23 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from mongoengine import connect
+import os
+from dotenv import load_dotenv
 
-connect(
-    db="interneers_lab",
-    host="mongodb://root:example@localhost:27019/?authSource=admin"
-)
+load_dotenv()
+
+ENV = os.getenv("ENV", "development")
+
+if ENV == "test":
+    connect(
+        db=os.getenv("TEST_MONGO_DB"),
+        host=os.getenv("TEST_MONGO_URI")
+    )
+else:
+    connect(
+        db=os.getenv("MONGO_DB"),
+        host=os.getenv("MONGO_URI")
+    )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

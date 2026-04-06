@@ -1,11 +1,10 @@
-from product.repositories import product_repository
-from product.repositories import product_category_repository
+from product.repositories import product_repository, product_category_repository
 from product.models import Product, ProductCategory
 import csv
 from io import TextIOWrapper
 
 
-def serialize_product(product):
+def serialize_product(product): #done testing
     return {
         "id": str(product.id),
         "name": product.name,
@@ -21,7 +20,7 @@ def serialize_product(product):
 
 
 # url: /products/ (GET)
-def get_products(filters = None, page = 1, limit = 10, sort=None):
+def get_products(filters = None, page = 1, limit = 10, sort=None):  #done testing
     products, total = product_repository.get_all_products(filters, page, limit, sort)
     return {
         "page": page,
@@ -31,8 +30,8 @@ def get_products(filters = None, page = 1, limit = 10, sort=None):
     }
 
 
-# url: /products/<product_id>/ (GET)
-def get_product_by_id(product_id):
+# url: /products/<product_id>/ (GET) 
+def get_product_by_id(product_id):  #done testing
     product = product_repository.get_product_by_id(product_id)
     if product:
         return serialize_product(product)
@@ -40,7 +39,7 @@ def get_product_by_id(product_id):
 
 
 # url: /products/ (POST)
-def create_product(data):
+def create_product(data):   #done testing
     required_fields = ["name","category","brand"]
 
     for field in required_fields:
@@ -70,7 +69,7 @@ def create_product(data):
 
 
 # url: /products/<product_id>/ (PUT)
-def update_product(product_id, data):
+def update_product(product_id, data):   #done testing
     if "price" in data and data["price"] < 0:
         raise ValueError("Price should be positive")
     
@@ -93,12 +92,12 @@ def update_product(product_id, data):
 
 
 # url: /products/<product_id>/ (DELETE)
-def delete_product(product_id):
+def delete_product(product_id): #done testing
     return product_repository.delete_product(product_id)
 
 
 # url: /categories/<category_id>/products/ (GET)
-def get_products_by_category(category_id, page=1, limit=10, sort=None):
+def get_products_by_category(category_id, page=1, limit=10, sort=None): #done testing
     category = ProductCategory.objects(id=category_id).first()
 
     if not category:
@@ -120,13 +119,15 @@ def get_products_by_category(category_id, page=1, limit=10, sort=None):
     }
 
 
-def add_product_to_category(product_id, category_id):
+# url: /categories/<category_id>/products/<product_id>/ (POST)
+def add_product_to_category(product_id, category_id): #done testing
     product = product_repository.add_product_to_category(product_id, category_id)
     if not product:
         return None
     return serialize_product(product)
 
 
+# url: /categories/<category_id>/products/<product_id>/ (DELETE)
 def remove_product_from_category(product_id, category_id):
     return product_repository.remove_product_from_category(product_id, category_id)
 
