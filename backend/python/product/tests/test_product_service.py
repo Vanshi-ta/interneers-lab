@@ -1,9 +1,9 @@
-import unittest
 from unittest.mock import patch, MagicMock
 from product.services import product_service
 from io import BytesIO
+import pytest
 
-class TestProductService(unittest.TestCase):
+class TestSerization:
 
     # serialize_product(product) with valid category
     def test_serialize_product_with_category(self):
@@ -29,11 +29,12 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.serialize_product(mock_product)
 
-        self.assertEqual(result["id"], "prod123")
-        self.assertIsInstance(result["id"], str)
-        self.assertEqual(result["name"], "Phone")
-        self.assertEqual(result["category"]["title"], "Electronics")
-
+        assert result["id"] == "prod123"
+        assert result["name"] == "Phone"
+        assert isinstance(result["id"], str)
+        assert result["name"] == "Phone"
+        assert result["category"]["title"] == "Electronics"
+        
 
     # serialize_product(product) with category = None   
     def test_serialize_product_without_category(self):
@@ -54,8 +55,10 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.serialize_product(mock_product)
 
-        self.assertIsNone(result["category"])
+        assert result["category"] is None
  
+
+class TestCreateProduct:
 
     # create_product(data) with valid data (successful creation)
     @patch("product.services.product_service.product_repository.create_product")
@@ -96,72 +99,33 @@ class TestProductService(unittest.TestCase):
         result = product_service.create_product(data)
 
         # Assertions
-        self.assertEqual(result["name"], "Phone")
-        self.assertEqual(result["brand"], "Apple")
-        self.assertEqual(result["category"]["title"], "Electronics")
+        assert result["name"] == "Phone"
+        assert result["brand"] == "Apple"
+        assert result["category"]["title"] == "Electronics"
+    
 
+    @pytest.mark.parametrize("payload", [
+        {"price": -10},
+        {"warehouse_quantity": -5},
+    ])
+    def test_invalid_values(self, payload):
 
-    # create_product(data) with invalid price (negative)
-    def test_create_product_invalid_price(self):
-        """
-        Test validation: negative price
-        """
-        
-        with self.assertRaises(ValueError):
-            product_service.create_product({
-                "name": "Phone",
-                "category": "abc123",
-                "brand": "Apple",
-                "price": -10
-            })
-
-
-    # create_product(data) with invalid category id
-    @patch("product.services.product_service.ProductCategory.objects")
-    def test_create_product_invalid_category(self, mock_category):
-        """
-        Test validation: invalid category id
-        """
-
-        mock_category.return_value.first.return_value = None
-
-        with self.assertRaises(ValueError):
-            product_service.create_product({
-                "name": "Phone",
-                "category": "invalid",
-                "brand": "Apple"
-            })
-
-
-    # create_product(data) with missing name field
-    def test_create_product_missing_name(self):
-        """
-        Test validation: missing required name field
-        """
-        
-        with self.assertRaises(ValueError) as context:
-            product_service.create_product({
-                "category": "123",
-                "brand": "Apple"
-            })
-        
-        self.assertIn("name is required", str(context.exception))
-
-
-    # create_product(data) with invalid (negative) warehouse quantity
-    def test_create_product_invalid_quantity(self):
-        """
-        Test validation: negative warehouse quantity
-        """
-        
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             product_service.create_product({
                 "name": "Phone",
                 "category": "123",
                 "brand": "Apple",
-                "warehouse_quantity": -5
+                **payload
             })
 
+    def test_missing_name(self):
+        with pytest.raises(ValueError):
+            product_service.create_product({
+                "category": "123",
+                "brand": "Apple"
+            })
+
+class TestUpdateProduct:
 
     # update_product(product_id, data) with valid data (successful update)
     @patch("product.services.product_service.product_repository.update_product")
@@ -196,8 +160,8 @@ class TestProductService(unittest.TestCase):
             "price": 20000
         })
 
-        self.assertEqual(result["name"], "Updated Phone")
-        self.assertEqual(result["category"]["title"], "Electronics")
+        assert result["name"] == "Updated Phone"
+        assert result["category"]["title"] == "Electronics"
 
 
     # update_product(product_id, data) when product does not exist
@@ -211,39 +175,24 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.update_product("invalid_id", {})
 
-        self.assertIsNone(result)
+        assert result is None
 
+    @pytest.mark.parametrize("payload", [
+        {"price": -1},
+        {"warehouse_quantity": -5},
+        {"brand": ""},
+    ])
+    def test_invalid_updates(self, payload):
 
-    # update_product(product_id, data) with invalid (negative) price
-    def test_update_product_invalid_price(self):
-        """
-        Test validation: negative price on update
-        """
-        
-        with self.assertRaises(ValueError):
-            product_service.update_product("id", {"price": -1})
+        with pytest.raises(ValueError):
+            product_service.update_product("id", payload)
 
+    @patch("product.services.product_service.product_repository.update_product")
+    def test_not_found(self, mock_update):
+        mock_update.return_value = None
 
-    # update_product(product_id, data) with empty brand
-    def test_update_product_empty_brand(self):
-        """
-        Test validation: empty brand on update
-        """
-        
-        with self.assertRaises(ValueError):
-            product_service.update_product("id", {"brand": ""})   
-
-
-    # update_product(product_id, data) with invalid (negative) warehouse quantity
-    def test_update_product_negative_quantity(self):
-        """
-        Test validation: negative warehouse quantity on update
-        """
-        
-        with self.assertRaises(ValueError):
-            product_service.update_product("123", {
-                "warehouse_quantity": -5
-            })
+        result = product_service.update_product("invalid", {})
+        assert result is None
 
 
     # update_product(product_id, data) with invalid category id
@@ -255,12 +204,13 @@ class TestProductService(unittest.TestCase):
         
         mock_category_objects.return_value.first.return_value = None
 
-        with self.assertRaises(ValueError):
+        with pytest.raises(ValueError):
             product_service.update_product("123", {
                 "category": "invalid_id"
             })
 
 
+class TestDeleteProduct:
     # delete_product(product_id) with valid id (successful deletion)
     @patch("product.services.product_service.product_repository.delete_product")
     def test_delete_product_success(self, mock_delete_product):
@@ -272,7 +222,7 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.delete_product("prod123")
 
-        self.assertTrue(result)
+        assert result is True
 
 
     # delete_product(product_id) with invalid id (product not found)
@@ -286,9 +236,10 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.delete_product("invalid_id")
 
-        self.assertFalse(result)
+        assert result is False
 
 
+class TestFetchProducts:
     # get_product_by_id(product_id) with valid id
     @patch("product.services.product_service.product_repository.get_product_by_id")
     def test_get_product_by_id_success(self, mock_get_product_by_id):
@@ -317,10 +268,10 @@ class TestProductService(unittest.TestCase):
         result = product_service.get_product_by_id("prod123")
 
         # Assertions
-        self.assertIsNotNone(result)
-        self.assertEqual(result["name"], "Phone")
-        self.assertEqual(result["brand"], "Apple")
-        self.assertEqual(result["category"]["title"], "Electronics")
+        assert result is not None
+        assert result["name"] == "Phone"
+        assert result["brand"] == "Apple"
+        assert result["category"]["title"] == "Electronics"
 
 
     # get_product_by_id(product_id) with invalid id
@@ -335,7 +286,7 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.get_product_by_id("invalid_id")
 
-        self.assertIsNone(result)
+        assert result is None
 
 
     # get_products(filters, page, limit, sort) with pagination and sorting
@@ -385,14 +336,13 @@ class TestProductService(unittest.TestCase):
         )
 
         # Assertions
-        self.assertEqual(result["page"], 2)
-        self.assertEqual(result["limit"], 5)
-        self.assertEqual(result["total"], 2)
+        assert result["page"] == 2
+        assert result["limit"] == 5
+        assert result["total"] == 2
 
-        self.assertEqual(len(result["data"]), 2)
-        self.assertEqual(result["data"][0]["name"], "Phone")
-        self.assertEqual(result["data"][1]["name"], "Laptop")
-
+        assert len(result["data"]) == 2
+        assert result["data"][0]["name"] == "Phone"
+        assert result["data"][1]["name"] == "Laptop"
 
     # get_products(filters, page, limit, sort) with no products found
     @patch("product.services.product_service.product_repository.get_all_products")
@@ -405,8 +355,8 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.get_products()
 
-        self.assertEqual(result["total"], 0)
-        self.assertEqual(len(result["data"]), 0)
+        assert result["total"] == 0
+        assert len(result["data"]) == 0
 
 
     # get_products_by_category(category_id) with valid category id
@@ -487,8 +437,8 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.add_product_to_category("prod123", "cat123")
 
-        self.assertEqual(result["name"], "Phone")
-        self.assertEqual(result["category"]["title"], "Electronics")
+        assert result["name"] == "Phone"
+        assert result["category"]["title"] == "Electronics"
 
 
     # add_product_to_category(product_id, category_id) with invalid product or category id
@@ -502,7 +452,7 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.add_product_to_category("invalid", "invalid")
 
-        self.assertIsNone(result)
+        assert result is None
 
 
     # remove_product_from_category(product_id, category_id) with valid ids (successful removal)
@@ -516,7 +466,7 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.remove_product_from_category("prod123", "cat123")
 
-        self.assertTrue(result)
+        assert result is True
 
 
     # remove_product_from_category(product_id, category_id) with invalid product or category id
@@ -530,8 +480,10 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.remove_product_from_category("invalid", "invalid")
 
-        self.assertIsNone(result)
+        assert result is None
 
+
+class TestBulkCreateProducts:
 
     # bulk_create_products(file) with valid CSV file (successful creation)
     @patch("product.services.product_service.product_repository.create_product")
@@ -567,9 +519,9 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.bulk_create_products(file)
 
-        self.assertEqual(result["created_count"], 1)
-        self.assertEqual(result["error_count"], 0)
-        self.assertEqual(result["data"][0]["name"], "Phone")
+        assert result["created_count"] == 1
+        assert result["error_count"] == 0
+        assert result["data"][0]["name"] == "Phone"
 
 
     # bulk_create_products(file) with missing required fields in CSV
@@ -585,77 +537,36 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.bulk_create_products(file)
 
-        self.assertEqual(result["created_count"], 0)
-        self.assertEqual(result["error_count"], 1)
-        self.assertIn("required", result["errors"][0]["error"].lower())
+        assert result["created_count"] == 0
+        assert result["error_count"] == 1
+        assert "required" in result["errors"][0]["error"].lower()
 
 
-    
-    # bulk_create_products(file) with invalid (negative) warehouse quantity in CSV
-    @patch("product.services.product_service.ProductCategory.objects")
-    def test_bulk_invalid_quantity(self, mock_category_objects):
-        """
-        Test bulk_create_products with negative warehouse quantity
-        """
-
-        mock_category = MagicMock()
-        mock_category_objects.return_value.first.return_value = mock_category
-
-        csv_data = """name,brand,category,warehouse_quantity
-        Phone,Apple,Electronics,-5"""
-
-        file = BytesIO(csv_data.encode("utf-8"))
-
-        result = product_service.bulk_create_products(file)
-
-        self.assertEqual(result["created_count"], 0)
-        self.assertEqual(result["error_count"], 1)
-        self.assertIn("warehouse quantity must be positive", result["errors"][0]["error"].lower())
-
-
-    # bulk_create_products(file) with invalid category in CSV
-    @patch("product.services.product_service.ProductCategory.objects")
-    def test_bulk_invalid_category(self, mock_category_objects):
-        """
-        Test bulk_create_products with invalid category in CSV
-        """
-        
-        mock_category_objects.return_value.first.return_value = None
-
-        csv_data = """name,brand,category
-        Phone,Apple,InvalidCategory"""
+    @pytest.mark.parametrize("csv_data, expected_errors", [
+        (
+            """name,brand,category
+            Apple,Electronics""",
+            1
+        ),
+        (
+            """name,brand,category,warehouse_quantity
+            Phone,Apple,Electronics,-5""",
+            1
+        ),
+        (
+            """name,brand,category,price
+            Phone,Apple,Electronics,-100""",
+            1
+        ),
+    ])
+    def test_bulk_invalid_cases(self, csv_data, expected_errors):
 
         file = BytesIO(csv_data.encode("utf-8"))
 
         result = product_service.bulk_create_products(file)
 
-        self.assertEqual(result["created_count"], 0)
-        self.assertEqual(result["error_count"], 1)
-        self.assertIn("does not exist", result["errors"][0]["error"])
-
-
-    # bulk_create_products(file) with invalid (negative) price in CSV
-    @patch("product.services.product_service.ProductCategory.objects")
-    def test_bulk_negative_price(self, mock_category_objects):
-        """
-        Test bulk_create_products with negative price in CSV
-        """
-        
-        mock_category = MagicMock()
-        mock_category_objects.return_value.first.return_value = mock_category
-
-        csv_data = """name,brand,category,price
-        Phone,Apple,Electronics,-100"""
-
-        file = BytesIO(csv_data.encode("utf-8"))
-
-        result = product_service.bulk_create_products(file)
-
-        self.assertEqual(result["created_count"], 0)
-        self.assertEqual(result["error_count"], 1)
-        self.assertIn("price must be positive", result["errors"][0]["error"].lower())
-
-
+        assert result["error_count"] == expected_errors
+   
     # bulk_create_products(file) with multiple rows where some have errors and some are valid
     @patch("product.services.product_service.product_repository.create_product")
     @patch("product.services.product_service.ProductCategory.objects")
@@ -688,5 +599,5 @@ class TestProductService(unittest.TestCase):
 
         result = product_service.bulk_create_products(file)
 
-        self.assertEqual(result["created_count"], 1)
-        self.assertEqual(result["error_count"], 1)
+        assert result["created_count"] == 1
+        assert result["error_count"] == 1

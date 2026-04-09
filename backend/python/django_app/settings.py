@@ -146,3 +146,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+DJANGO_SETTINGS_MODULE = "django_app.settings"
