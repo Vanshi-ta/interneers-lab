@@ -26,7 +26,7 @@ def get_category_by_id(category_id):
 
 
 def create_category(data):
-    if "title" not in data:
+    if not data.get("title") or not data["title"].strip():
         raise ValueError("Title is required")
     
     category = product_category_repository.create_category(data)
