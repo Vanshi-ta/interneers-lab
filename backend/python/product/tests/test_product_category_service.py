@@ -35,7 +35,6 @@ class TestCreateCategory:
             product_category_service.create_category(payload)
             
 
-
 class TestDeleteCategory:
 
     @patch("product.services.product_category_service.ProductCategory.objects")
