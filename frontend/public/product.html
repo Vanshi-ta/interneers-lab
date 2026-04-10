@@ -1,63 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Page</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Product Page</title>
 
-  <link rel="stylesheet" href="styles/product.css" />
+    <link rel="stylesheet" href="styles/product.css" />
 </head>
 
 <body>
 
-  <h1>Product Display</h1>
-
-  <div id="product-container">
-
-  </div>
-  <script>
-  const container = document.getElementById("product-container");
-
-  container.innerHTML = "<p>Loading products...</p>";
+    <h1>Product Display</h1>
   
-  fetch("http://127.0.0.1:8000/products/")
-    .then(container.innerHTML = "")
-    .then(response => response.json())
-    .then(data => {
-      const products = data.data;
-      if (products.length === 0) {
-        container.innerHTML = "<p>No products available</p>";
-        return;
-      }
-      console.log("Products:", products);
+    <div id="filters">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search by product name..."
+        />
 
-      // Loop through products
-      products.forEach((product,index) => {
+        <input 
+            type="text" 
+            id="brandInput" 
+            placeholder="Filter by brand..."
+        />
 
-        // Create tile
-        const tile = document.createElement("div");
-        tile.className = "product-tile";
+        <button onclick="applyFilters()">Apply</button>
+        <button onclick="resetFilters()">Reset</button>
+    </div>
 
-        tile.style.animationDelay = `${index * 0.1}s`;
-        
-        // Fill data
-        tile.innerHTML = `
-          <div class="product-title">${product.name}</div>
-          <div class="product-price">₹${product.price.toLocaleString("en-IN")}</div>
-          <div class="product-brand">${product.brand}</div>
-          <div class="product-category">
-            ${product.category ? product.category.title : "No Category"}
-          </div>
-        `;
+    <div id="product-container">
+    </div>
+    <div id="pagination">
+        <button onclick="prevPage()">Prev</button>
+        <span id="pageInfo"></span>
+        <button onclick="nextPage()">Next</button>
+    </div>
 
-        // Append to container
-        container.appendChild(tile);
-      });
-    })
-    .catch(error => {
-      console.error("Error:", error);
-    });
-</script>
+    <script>
+        let currentPage = 1;
+        let limit = 6; 
+        let totalPages = 1;
+        const container = document.getElementById("product-container");
+        function fetchProducts(query = "") {
+            container.innerHTML = "<p>Loading products...</p>";
+            
+            fetch(`http://127.0.0.1:8000/products/?page=${currentPage}&limit=${limit}${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    const products = data.data;
+                    const total = data.total;
+                    totalPages = Math.ceil(total / limit);
+                    container.innerHTML = "";
+
+                    if (!products || products.length === 0) {
+                        container.innerHTML = "<p>No products found</p>";
+                        return;
+                    }
+                    
+                    console.log("Products:", products);
+
+                    // Loop through products
+                    products.forEach((product,index) => {
+
+                        // Create tile
+                        const tile = document.createElement("div");
+                        tile.className = "product-tile";
+
+                        tile.style.animationDelay = `${index * 0.1}s`;
+                        
+                        // Fill data
+                        tile.innerHTML = `
+                        <div class="product-title">${product.name}</div>
+                        <div class="product-price">₹${product.price.toLocaleString("en-IN")}</div>
+                        <div class="product-brand">${product.brand}</div>
+                        <div class="product-category">
+                            ${product.category ? product.category.title : "No Category"}
+                        </div>
+                        `;
+
+                        // Append to container
+                        container.appendChild(tile);
+                    });
+                    updatePaginationUI();
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    container.innerHTML = "<p>Error loading products</p>";
+                });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            currentPage = 1;
+            const name = document.getElementById("searchInput").value.trim();
+            const brand = document.getElementById("brandInput").value.trim();
+
+            let params = [];
+
+            if (name) params.push(`name=${encodeURIComponent(name)}`);
+            if (brand) params.push(`brand=${encodeURIComponent(brand)}`);
+
+            const query = params.length ? `?${params.join("&")}` : "";
+            fetchProducts(query);
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("brandInput").value = "";
+
+            fetchProducts();
+        }
+
+        function updatePaginationUI() {
+            document.getElementById("pageInfo").innerText =
+                `Page ${currentPage} of ${totalPages}`;
+
+            document.querySelector("#pagination button:first-child").disabled =
+                currentPage === 1;
+
+            document.querySelector("#pagination button:last-child").disabled =
+                currentPage === totalPages;
+            }
+
+            function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                applyFilters(); // keep filters + pagination
+            }
+            }
+
+            function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                applyFilters();
+            }
+            }
+
+        // Initial load
+        fetchProducts();
+    </script>
 
 </body>
 </html>

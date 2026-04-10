@@ -65,3 +65,49 @@ body {
   font-size: 13px;
   color: #555;
 }
+
+#filters {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+#filters input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#filters button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #240b36;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#filters button:hover {
+  background-color: #3a1c5c;
+}
+
+#pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#pagination button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #240b36;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#pagination button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
