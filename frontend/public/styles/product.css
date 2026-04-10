@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+/* Container for multiple products */
+#product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Product Tile */
+.product-tile {
+  width: 280px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+}
+
+/* Hover effect */
+.product-tile:hover {
+  transform: translateY(-5px);
+}
+
+/* Content styling */
+.product-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-price {
+  color: green;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.product-brand {
+  color: gray;
+  margin-top: 4px;
+}
+
+.product-category {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+}
