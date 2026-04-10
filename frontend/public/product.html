@@ -13,15 +13,46 @@
   <h1>Product Display</h1>
 
   <div id="product-container">
-    
-    <div class="product-tile">
-      <div class="product-title">iPhone 15</div>
-      <div class="product-price">₹80,000</div>
-      <div class="product-brand">Apple</div>
-      <div class="product-category">Electronics</div>
-    </div>
 
   </div>
 
 </body>
+
+<script>
+  const container = document.getElementById("product-container");
+
+  fetch("http://127.0.0.1:8000/products/")
+    .then(response => response.json())
+    .then(data => {
+      const products = data.data;
+
+      console.log("Products:", products);
+
+      // Loop through products
+      products.forEach((product,index) => {
+
+        // Create tile
+        const tile = document.createElement("div");
+        tile.className = "product-tile";
+
+        tile.style.animationDelay = `${index * 0.1}s`;
+        
+        // Fill data
+        tile.innerHTML = `
+          <div class="product-title">${product.name}</div>
+          <div class="product-price">₹${product.price}</div>
+          <div class="product-brand">${product.brand}</div>
+          <div class="product-category">
+            ${product.category ? product.category.title : "No Category"}
+          </div>
+        `;
+
+        // Append to container
+        container.appendChild(tile);
+      });
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+</script>
 </html>
