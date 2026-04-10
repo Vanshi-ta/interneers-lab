@@ -15,17 +15,20 @@
   <div id="product-container">
 
   </div>
-
-</body>
-
-<script>
+  <script>
   const container = document.getElementById("product-container");
 
+  container.innerHTML = "<p>Loading products...</p>";
+  
   fetch("http://127.0.0.1:8000/products/")
+    .then(container.innerHTML = "")
     .then(response => response.json())
     .then(data => {
       const products = data.data;
-
+      if (products.length === 0) {
+        container.innerHTML = "<p>No products available</p>";
+        return;
+      }
       console.log("Products:", products);
 
       // Loop through products
@@ -40,7 +43,7 @@
         // Fill data
         tile.innerHTML = `
           <div class="product-title">${product.name}</div>
-          <div class="product-price">₹${product.price}</div>
+          <div class="product-price">₹${product.price.toLocaleString("en-IN")}</div>
           <div class="product-brand">${product.brand}</div>
           <div class="product-category">
             ${product.category ? product.category.title : "No Category"}
@@ -55,4 +58,6 @@
       console.error("Error:", error);
     });
 </script>
+
+</body>
 </html>
