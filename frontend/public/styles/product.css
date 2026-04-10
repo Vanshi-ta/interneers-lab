@@ -1,0 +1,113 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
+}
+
+/* Container for multiple products */
+#product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Product Tile */
+.product-tile {
+  cursor: pointer;
+  width: 280px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  /* Animation initial state */
+  opacity: 0;
+  transform: translateY(20px);
+
+  /* Apply animation */
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Hover effect */
+.product-tile:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Keyframes */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Content styling */
+.product-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-price {
+  color: green;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.product-brand {
+  color: gray;
+  margin-top: 4px;
+}
+
+.product-category {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+#filters {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+#filters input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#filters button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #240b36;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#filters button:hover {
+  background-color: #3a1c5c;
+}
+
+#pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#pagination button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #240b36;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#pagination button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
