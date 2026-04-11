@@ -3,7 +3,7 @@ import React from "react";
 const Header: React.FC = () => {
   return (
     <header style={styles.header}>
-      <h1>🛍️ Product Dashboard</h1>
+      <h1>Product Dashboard</h1>
     </header>
   );
 };
