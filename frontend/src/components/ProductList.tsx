@@ -8,9 +8,9 @@ interface Props {
 
 const ProductList: React.FC<Props> = ({ products }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
   const handleClick = (id: string) => {
-    // toggle logic
-    setExpandedId((prev) => (prev === id ? null : id));
+    setExpandedId((prev: string | null) => (prev === id ? null : id));
   };
 
   return (
