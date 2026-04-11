@@ -48,14 +48,14 @@ const Filters: React.FC<Props> = ({
       >
         <option value="">All Categories</option>
         {categories.map((c) => (
-          <option key={c.id} value={c.title}>
+          <option key={c.id} value={c.id}>
             {c.title}
           </option>
         ))}
       </select>
 
       <button className="btn-reset" onClick={onReset}>
-        Reset Params
+        Reset
       </button>
     </div>
   );
