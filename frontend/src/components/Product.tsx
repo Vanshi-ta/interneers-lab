@@ -9,36 +9,29 @@ interface Props {
 
 const Product: React.FC<Props> = ({ product, isExpanded, onClick }) => {
   return (
-    <div style={styles.card} onClick={onClick}>
-      <h3>{product.name}</h3>
-      <p>₹{product.price}</p>
-      <p>{product.brand}</p>
+    <div
+      className={`product-card ${isExpanded ? "expanded" : ""}`}
+      onClick={onClick}
+    >
+      <div className="product-content">
+        <div className="product-brand">{product.brand}</div>
+        <h3 className="product-title">{product.name}</h3>
+        <p className="product-desc">
+          Premium quality product out of the box with extensive specifications
+          and beautiful finish.
+        </p>
+      </div>
 
-      {isExpanded && (
-        <div style={styles.details}>
-          <p>Category: {product.category?.title || "No Category"}</p>
-          <p>Product ID: {product.id}</p>
-          <p>More details coming soon...</p>
-        </div>
-      )}
+      <div className="product-footer">
+        <span className="product-price">
+          ${Number(product.price).toFixed(2)}
+        </span>
+        <span className="product-category">
+          {product.category ? product.category.title : "Uncategorized"}
+        </span>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  card: {
-    border: "1px solid #ccc",
-    padding: "12px",
-    borderRadius: "8px",
-    width: "250px",
-    cursor: "pointer",
-  },
-  details: {
-    marginTop: "10px",
-    background: "#f5f5f5",
-    padding: "8px",
-    borderRadius: "6px",
-  },
 };
 
 export default Product;

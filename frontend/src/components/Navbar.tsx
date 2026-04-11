@@ -1,33 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   return (
-    <nav style={styles.nav}>
-      <a href="/" style={styles.link}>
+    <nav className="app-navbar">
+      <Link to="/" className="nav-link">
         Home
-      </a>
-      <a href="/products" style={styles.link}>
+      </Link>
+      <Link to="/products" className="nav-link">
         Products
-      </a>
-      <a href="/categories" style={styles.link}>
-        Categories
-      </a>
+      </Link>
+      <Link to="/about" className="nav-link">
+        About
+      </Link>
+      <Link to="/contact" className="nav-link">
+        Contact
+      </Link>
     </nav>
   );
-};
-
-const styles = {
-  nav: {
-    display: "flex",
-    gap: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#eee",
-  },
-  link: {
-    textDecoration: "none",
-    color: "#240b36",
-    fontWeight: "bold",
-  },
 };
 
 export default Navbar;
