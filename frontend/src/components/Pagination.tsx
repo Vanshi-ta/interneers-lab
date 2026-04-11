@@ -10,7 +10,7 @@ interface Props {
 const Pagination: React.FC<Props> = ({ page, total, limit, onPageChange }) => {
   const totalPages = Math.ceil(total / limit);
 
-  if (totalPages <= 1) return null; // Hide pagination if only 1 page
+  if (totalPages <= 1) return null;
 
   return (
     <div className="pagination-container">

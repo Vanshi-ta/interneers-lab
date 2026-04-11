@@ -16,10 +16,7 @@ const Product: React.FC<Props> = ({ product, isExpanded, onClick }) => {
       <div className="product-content">
         <div className="product-brand">{product.brand}</div>
         <h3 className="product-title">{product.name}</h3>
-        <p className="product-desc">
-          Premium quality product out of the box with extensive specifications
-          and beautiful finish.
-        </p>
+        <p className="product-desc">{product.description}</p>
       </div>
 
       <div className="product-footer">
