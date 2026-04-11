@@ -10,11 +10,19 @@ const ProductList: React.FC<Props> = ({ products }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleClick = (id: string) => {
-    setExpandedId((prev: string | null) => (prev === id ? null : id));
+    setExpandedId((prev) => (prev === id ? null : id));
   };
 
+  if (!products || products.length === 0) {
+    return (
+      <div style={{ textAlign: "center", color: "var(--text-muted)" }}>
+        No products found matching your filters.
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.container}>
+    <div className="product-grid">
       {products.map((product) => (
         <Product
           key={product.id}
@@ -25,14 +33,6 @@ const ProductList: React.FC<Props> = ({ products }) => {
       ))}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    gap: "16px",
-    flexWrap: "wrap" as const,
-  },
 };
 
 export default ProductList;

@@ -7,7 +7,7 @@ def apply_filters(query, filters):
         return query
 
     if filters.get("name"):
-        query = query.filter(name=filters["name"])
+        query = query.filter(name__icontains=filters["name"])
 
     if filters.get("description"):
         query = query.filter(description=filters["description"])
@@ -18,13 +18,13 @@ def apply_filters(query, filters):
         if category:
             query = query.filter(category=category)
 
-    # Multiple categories filter (FIXED + VALIDATION)
+    # Multiple categories filter
     if filters.get("categories"):
         raw_ids = filters["categories"].split(",")
 
         valid_ids = []
         for cid in raw_ids:
-            cid = cid.strip().rstrip("/")  # fixes your error
+            cid = cid.strip().rstrip("/") 
             if ObjectId.is_valid(cid):
                 valid_ids.append(cid)
 
@@ -34,7 +34,7 @@ def apply_filters(query, filters):
 
     # Single brand
     if filters.get("brand"):
-        query = query.filter(brand=filters["brand"])
+        query = query.filter(brand__icontains=filters["brand"])
 
     # Multiple brands
     if filters.get("brands"):
