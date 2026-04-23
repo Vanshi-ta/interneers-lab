@@ -10,6 +10,7 @@ def serialize_product(product): #done testing
         "name": product.name,
         "price": product.price,
         "brand": product.brand,
+        "description": product.description,
         "category": {
             "id": str(product.category.id),
             "title": product.category.title
