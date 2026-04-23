@@ -28,15 +28,21 @@ const ProductPage: React.FC = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      if (!id) return;
+      if (!id) {
+        setError("Invalid product ID");
+        return;
+      }
       try {
         setIsLoading(true);
-        const [fetchedProduct, fetchedCategories] = await Promise.all([
-          fetchProductById(id),
-          fetchCategories(),
-        ]);
+        console.log("Product ID:", id);
+
+        const fetchedProduct = await fetchProductById(id);
+        console.log("Fetched Data:", fetchedProduct);
+        const fetchedCategories = await fetchCategories();
+
         setProduct(fetchedProduct);
         setCategories(fetchedCategories);
+        setError(null);
         setFormData({
           name: fetchedProduct.name || "",
           price: fetchedProduct.price ? fetchedProduct.price.toString() : "",
@@ -45,7 +51,8 @@ const ProductPage: React.FC = () => {
           category: fetchedProduct.category?.id || "",
         });
       } catch (err: any) {
-        setError(err.message || "Failed to load product");
+        console.error(err);
+        setError("Failed to fetch product");
       } finally {
         setIsLoading(false);
       }

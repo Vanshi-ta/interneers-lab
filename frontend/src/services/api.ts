@@ -2,7 +2,7 @@ import { ProductResponse, Category, Product } from "../types/Product";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 const CATEGORY_URL =
-  process.env.REACT_APP_CATEGORY_URL || "http://127.0.0.1:8001";
+  process.env.REACT_APP_CATEGORY_URL || "http://127.0.0.1:8000";
 
 export interface FetchProductsParams {
   page?: number;
@@ -44,10 +44,13 @@ export const fetchCategories = async (): Promise<Category[]> => {
 
 export const fetchProductById = async (id: string): Promise<Product> => {
   const response = await fetch(`${API_URL}/products/${id}/`);
+
   if (!response.ok) {
-    throw new Error("Failed to fetch product");
+    throw new Error("Failed to fetch");
   }
-  return response.json();
+
+  const data = await response.json();
+  return data; // IMPORTANT: return directly, not data.data
 };
 
 export const updateProduct = async (
