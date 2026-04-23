@@ -69,3 +69,36 @@ export const updateProduct = async (
   }
   return response.json();
 };
+
+export const createCategory = async (
+  data: Partial<Category>,
+): Promise<Category> => {
+  const response = await fetch(`${CATEGORY_URL}/categories/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to create category");
+  }
+  return response.json();
+};
+
+export const updateCategory = async (
+  id: string,
+  data: Partial<Category>,
+): Promise<Category> => {
+  const response = await fetch(`${CATEGORY_URL}/categories/${id}/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update category");
+  }
+  return response.json();
+};

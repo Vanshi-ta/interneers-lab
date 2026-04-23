@@ -26,5 +26,5 @@ export const useCategories = () => {
     loadCategories();
   }, []);
 
-  return { categories, loading, error };
+  return { categories, loading, error, setCategories };
 };
