@@ -1,4 +1,4 @@
-import { ProductResponse, Category } from "../types/Product";
+import { ProductResponse, Category, Product } from "../types/Product";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
 const CATEGORY_URL =
@@ -39,5 +39,30 @@ export const fetchCategories = async (): Promise<Category[]> => {
     throw new Error("Failed to fetch categories");
   }
 
+  return response.json();
+};
+
+export const fetchProductById = async (id: string): Promise<Product> => {
+  const response = await fetch(`${API_URL}/products/${id}/`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch product");
+  }
+  return response.json();
+};
+
+export const updateProduct = async (
+  id: string,
+  data: Partial<Product>,
+): Promise<Product> => {
+  const response = await fetch(`${API_URL}/products/${id}/`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update product");
+  }
   return response.json();
 };

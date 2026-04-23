@@ -1,9 +1,10 @@
 # Interneers Lab
 
 Welcome to the **Interneers Lab** repository! This serves as a minimal starter kit for learning and experimenting with:
+
 - **Django** (Python)
 - **Golang** (Go)
-- **React**  (with TypeScript)
+- **React** (with TypeScript)
 - **MongoDB** (via Docker Compose)
 - Development environment in **VSCode** (recommended)
 
@@ -44,6 +45,7 @@ frontend/      # React + TypeScript (see frontend/README.md)
    - **Linux**: Install via your distro's package manager, e.g., `sudo apt-get install git` (Ubuntu/Debian).
 
 2. **Configure Git** with your name and email:
+
    ```bash
    git config --global user.name "Your Name"
    git config --global user.email "your.email@example.com" # Use the same email you shared during onboarding

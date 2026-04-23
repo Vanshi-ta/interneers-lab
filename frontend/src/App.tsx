@@ -10,6 +10,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/categories" element={<CategoriesPage />} />
       <Route path="/products" element={<HomePage />} />
+      <Route path="/products/:id" element={<ProductsPage />} />
       {/* You can add more routes here, e.g., <Route path="/about" element={<About />} /> */}
     </Routes>
   );

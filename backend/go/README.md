@@ -1,12 +1,12 @@
 # Interneers Lab - Backend in Golang
 
 Welcome to the **Interneers Lab 2026** Golang backend! This serves as a minimal starter kit for learning and experimenting with:
+
 - **Golang** (Go)
 - **MongoDB** (via Docker Compose)
 - Development environment in **VSCode** (recommended)
 
 **Important:** Use the **same email** you shared during onboarding when configuring Git and related tools. That ensures consistency across all internal systems.
-
 
 ---
 

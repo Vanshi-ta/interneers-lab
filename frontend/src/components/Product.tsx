@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Product as ProductType } from "../types/Product";
 
 interface Props {
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const Product: React.FC<Props> = ({ product, isExpanded, onClick }) => {
+  const navigate = useNavigate();
+
   return (
     <div
       className={`product-card ${isExpanded ? "expanded" : ""}`}
@@ -16,7 +19,7 @@ const Product: React.FC<Props> = ({ product, isExpanded, onClick }) => {
       <div className="product-content">
         <div className="product-brand">{product.brand}</div>
         <h3 className="product-title">{product.name}</h3>
-        <p className="product-desc">{product.description}</p>
+        {isExpanded && <p className="product-desc">{product.description}</p>}
       </div>
 
       <div className="product-footer">
@@ -26,6 +29,16 @@ const Product: React.FC<Props> = ({ product, isExpanded, onClick }) => {
         <span className="product-category">
           {product.category ? product.category.title : "Uncategorized"}
         </span>
+        <button
+          className="btn-page"
+          style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/products/${product.id}`);
+          }}
+        >
+          View Details
+        </button>
       </div>
     </div>
   );
